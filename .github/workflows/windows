@@ -1,0 +1,38 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest-x86_64
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Swift 6.1.1
+      uses: compnerd/gha-setup-swift@main
+      with:
+        branch: swift-6.1.1-release
+        tag: 6.1.1-RELEASE
+        
+    - name: Setup Visual Studio environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        
+    - name: Show environment info
+      run: |
+        swift --version
+        echo "Visual Studio environment:"
+        where cl
+        cl /? 2>&1 | head -n 5
+      
+    - name: Build for Windows (${{ matrix.arch }})
+      run: |
+        swift build
